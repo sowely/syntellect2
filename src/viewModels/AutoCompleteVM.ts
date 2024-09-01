@@ -14,6 +14,10 @@ class AutoCompleteVM {
     @observable public countries: CountryInfo[] = [];
     /** Максимальное количество подсказок */
     @observable public maxTipsCount: number;
+    /** Признак загрузки */
+    @observable public isLoading: boolean = false;
+    /** Id установленного таймаута для предотвращения лишних запросов */
+    @observable public timeoutId?: ReturnType<typeof setTimeout>;
 
     /** сеттер для текста поиска... */
     @action.bound
@@ -29,15 +33,36 @@ class AutoCompleteVM {
         this.countries = [];
     }
 
+    /** Очистка массива стран */
+    @action
+    clearCountries() {
+        this.countries = [];
+    }
+
     /** Получение массива стран */
     @action
     async getCountries(value: string) {
-        try {
-            const countries = await getCountryByName(value);
-            runInAction(() => {this.countries = countries.slice(0, this.maxTipsCount)});
-        } catch (e) {
-            console.log(e);
+        this.isLoading = true;
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
         }
+
+        this.timeoutId = setTimeout(async () => {
+            if (this.searchText) {
+                try {
+                    console.log(this.searchText)
+                    const countries = await getCountryByName(value);
+                    runInAction(() => {
+                        this.countries = countries.slice(0, this.maxTipsCount);
+                    });
+                } catch (e) {
+                    console.log(e);
+                }
+            } else {
+                this.clearCountries();
+            }
+            runInAction(() => this.isLoading = false)
+        }, 300)
     }
 }
 
