@@ -30,13 +30,13 @@ class AutoCompleteVM {
     @action.bound
     onTipClick(value: string) {
         this.searchText = value;
-        this.countries = [];
+        this.setCountries([]);
     }
 
-    /** Очистка массива стран */
+    /** Изменение массива стран */
     @action
-    clearCountries() {
-        this.countries = [];
+    setCountries(arr: CountryInfo[]) {
+        this.countries = arr;
     }
 
     /** Получение массива стран */
@@ -53,13 +53,13 @@ class AutoCompleteVM {
                     console.log(this.searchText)
                     const countries = await getCountryByName(value);
                     runInAction(() => {
-                        this.countries = countries.slice(0, this.maxTipsCount);
+                        this.setCountries(countries.slice(0, this.maxTipsCount));
                     });
                 } catch (e) {
                     console.log(e);
                 }
             } else {
-                this.clearCountries();
+                this.setCountries([]);
             }
             runInAction(() => this.isLoading = false)
         }, 300)
