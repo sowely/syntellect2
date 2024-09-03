@@ -18,6 +18,8 @@ class AutoCompleteVM {
     @observable public isLoading: boolean = false;
     /** Id установленного таймаута для предотвращения лишних запросов */
     @observable public timeoutId?: ReturnType<typeof setTimeout>;
+    /** Время задержки для предотвращения лишних запросов */
+    @observable public timeout: number = 500;
 
     /** сеттер для текста поиска... */
     @action.bound
@@ -62,7 +64,7 @@ class AutoCompleteVM {
                 this.setCountries([]);
             }
             runInAction(() => this.isLoading = false)
-        }, 300)
+        }, this.timeout)
     }
 }
 
