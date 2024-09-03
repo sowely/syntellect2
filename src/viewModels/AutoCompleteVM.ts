@@ -52,7 +52,6 @@ class AutoCompleteVM {
         this.timeoutId = setTimeout(async () => {
             if (this.searchText) {
                 try {
-                    console.log(this.searchText)
                     const countries = await getCountryByName(value);
                     runInAction(() => {
                         this.setCountries(countries.slice(0, this.maxTipsCount));
